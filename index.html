@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Lawyer Logic</title>
+<style>
+  html, body {
+    margin:0; padding:0; height:100%; overflow:hidden; 
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: black;
+    color: white;
+  }
+  #slideframe {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border: none;
+    pointer-events: auto;
+  }
+  #overlay, #lockScreen, #virusPopups {
+    position: fixed;
+    top:0; left:0; width: 100%; height: 100%;
+    pointer-events: none;
+  }
+  #overlay.glitch {
+    animation: glitchAnim 0.3s infinite;
+  }
+  @keyframes glitchAnim {
+    0% {filter: hue-rotate(0deg) contrast(1);}
+    20% {filter: hue-rotate(20deg) contrast(1.2);}
+    40% {filter: hue-rotate(-20deg) contrast(1);}
+    60% {filter: hue-rotate(15deg) contrast(1.3);}
+    80% {filter: hue-rotate(-15deg) contrast(1);}
+    100% {filter: hue-rotate(0deg) contrast(1);}
+  }
+  #lockScreen {
+    background: rgba(0,0,0,0.95);
+    display: none;
+    z-index: 10000;
+    text-align: center;
+    padding-top: 10vh;
+  }
+  #lockScreen img {
+    width: 200px;
+    margin-bottom: 20px;
+  }
+  #lockScreen h1 {
+    color: red;
+    font-size: 3em;
+    margin-bottom: 20px;
+    text-shadow: 0 0 10px red;
+  }
+  #lockScreen p {
+    font-size: 1.5em;
+    margin-bottom: 30px;
+  }
+  #lockScreen small {
+    color: #aaa;
+  }
+  #virusPopups {
+    pointer-events: auto;
+    z-index: 11000;
+  }
+  .popup {
+    position: fixed;
+    background: white;
+    border: 2px solid #444;
+    padding: 15px 25px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: black;
+    box-shadow: 0 0 10px 2px red;
+    border-radius: 8px;
+    user-select: none;
+  }
+  .popup .title {
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+  .popup .msg {
+    font-size: 0.9em;
+  }
+</style>
+</head>
+<body>
+
+<iframe id="slideframe" src="https://docs.google.com/presentation/d/1UhZgN-cX0ix6EQK30v7JpqT0XQWlNC4Tn8lHcxi80Xk/edit?usp=sharing
+
+<div id="overlay"></div>
+
+<div id="lockScreen">
+  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Padlock_Icon.svg/1024px-Padlock_Icon.svg.png" alt="Lock Icon"/>
+  <h1>!!! RANSOMWARE LOCKED !!!</h1>
+  <p>All your files are encrypted.<br />
+  Pay <strong>$200</strong> in Bitcoin to unlock your computer.</p>
+  <small>Press <strong>K</strong> to unlock and exit.</small>
+</div>
+
+<div id="virusPopups"></div>
+
+<script>
+(() => {
+  const overlay = document.getElementById('overlay');
+  const lockScreen = document.getElementById('lockScreen');
+  const virusPopups = document.getElementById('virusPopups');
+  const slideframe = document.getElementById('slideframe');
+
+  let ransomwareActive = true;
+
+  // Start glitch effect on background iframe
+  function startGlitch() {
+    overlay.classList.add('glitch');
+  }
+
+  // Stop glitch effect
+  function stopGlitch() {
+    overlay.classList.remove('glitch');
+  }
+
+  // Show ransomware lock screen
+  function showLockScreen() {
+    lockScreen.style.display = 'block';
+    slideframe.style.pointerEvents = 'none'; // block interaction
+  }
+
+  // Hide ransomware lock screen
+  function hideLockScreen() {
+    lockScreen.style.display = 'none';
+    slideframe.style.pointerEvents = 'auto';
+  }
+
+  // Create realistic virus popup windows
+  function createVirusPopup(text, left, top) {
+    const popup = document.createElement('div');
+    popup.className = 'popup';
+    popup.style.left = left + 'px';
+    popup.style.top = top + 'px';
+    popup.innerHTML = `
+      <div class="title">Virus Alert</div>
+      <div class="msg">${text}</div>
+    `;
+    virusPopups.appendChild(popup);
+
+    // Make popup draggable (optional)
+    let isDragging = false, offsetX, offsetY;
+    popup.onmousedown = function(e) {
+      isDragging = true;
+      offsetX = e.clientX - popup.offsetLeft;
+      offsetY = e.clientY - popup.offsetTop;
+      popup.style.cursor = 'grabbing';
+    };
+    document.onmouseup = function() {
+      isDragging = false;
+      popup.style.cursor = 'default';
+    };
+    document.onmousemove = function(e) {
+      if (!isDragging) return;
+      popup.style.left = (e.clientX - offsetX) + 'px';
+      popup.style.top = (e.clientY - offsetY) + 'px';
+    };
+  }
+
+  // Generate multiple popups in random places
+  function spamPopups() {
+    const messages = [
+      "Virus detected in system32.dll",
+      "Malware found in browser.exe",
+      "Suspicious activity detected!",
+      "System files corrupted",
+      "Unauthorized access attempt blocked",
+      "Firewall disabled!",
+      "Ransomware encrypting files...",
+      "Trojan detected in memory",
+    ];
+    for (let i=0; i<8; i++) {
+      const left = Math.random() * (window.innerWidth - 300);
+      const top = Math.random() * (window.innerHeight - 100);
+      createVirusPopup(messages[i % messages.length], left, top);
+    }
+  }
+
+  // Show fake lag by freezing UI with overlay + CPU loop
+  function fakeLag(duration = 5000) {
+    overlay.style.background = 'rgba(0,0,0,0.3)';
+    startGlitch();
+    let start = Date.now();
+    while(Date.now() - start < duration) {
+      // Busy wait - freezes UI, looks like lag
+      for(let i=0; i<10000000; i++) {}
+    }
+    overlay.style.background = 'transparent';
+    stopGlitch();
+  }
+
+  // Run the ransomware prank main loop
+  function ransomwareLoop() {
+    if (!ransomwareActive) return;
+    showLockScreen();
+    startGlitch();
+    spamPopups();
+    fakeLag(4000);
+    setTimeout(ransomwareLoop, 7000);
+  }
+
+  ransomwareLoop();
+
+  // Handle keypress to stop prank (only K)
+  window.addEventListener('keydown', (e) => {
+    if (e.key.toLowerCase() === 'k') {
+      ransomwareActive = false;
+      hideLockScreen();
+      virusPopups.innerHTML = '';
+      stopGlitch();
+      alert('System unlocked! You pressed K.');
+    }
+  });
+
+  // On tab close or reload - open lock-tab.html prank page
+  window.onbeforeunload = function() {
+    window.open('lock-tab.html', '_blank');
+    return "Are you sure you want to leave? Your system might be locked!";
+  };
+})();
+</script>
+
+</body>
+</html>
+
