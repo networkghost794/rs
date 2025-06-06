@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Lock Tab Prank</title>
+<style>
+  body {
+    background: black;
+    color: white;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    user-select: none;
+    overflow: hidden;
+    text-align: center;
+    padding-top: 20vh;
+  }
+  h1 {
+    font-size: 3em;
+    margin-bottom: 0.3em;
+    color: red;
+    text-shadow: 0 0 10px red;
+  }
+  p {
+    font-size: 1.2em;
+  }
+</style>
+<script>
+  // Disable close with some annoying tricks:
+  // Can't close with X easily. Only way is Task Manager (simulate).
+
+  // Open many alert popups to annoy
+  function annoy() {
+    alert('Closing this tab is disabled! Use Task Manager to end this.');
+  }
+
+  // Flood alerts repeatedly
+  setInterval(annoy, 5000);
+
+  // Disable right click
+  window.oncontextmenu = function() { return false; };
+
+  // Disable key combos like Ctrl+W, Ctrl+F4, Ctrl+Shift+W
+  window.onkeydown = function(e) {
+    if (
+      (e.ctrlKey && e.key.toLowerCase() === 'w') ||  // Ctrl+W
+      (e.ctrlKey && e.key.toLowerCase() === 'f4') || // Ctrl+F4
+      (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'w') || // Ctrl+Shift+W
+      (e.key === 'F4') // Alt+F4 (sometimes)
+    ) {
+      e.preventDefault();
+      annoy();
+    }
+  };
+</script>
+</head>
+<body>
+  <h1>Tab Lock Active</h1>
+  <p>This tab cannot be closed normally.<br />
+  Use Task Manager or Force Quit to stop it.</p>
+</body>
+</html>
